@@ -18,12 +18,11 @@
  * Version details
  *
  * @package    block_trackingdashboard
- * @copyright  1999 onwards Martin Dougiamas (http://dougiamas.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2021 SOFAD
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2021062101;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2021062809;        // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2021051100;        // Requires this Moodle version.
 $plugin->component = 'block_trackingdashboard';      // Full name of the plugin (used for diagnostics)

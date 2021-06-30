@@ -10,20 +10,19 @@ class users_helper
     /**
      * Returns a list of users without teachers and current user
      *
-     * @param array $coursesTeachedByUser
+     * @param array $coursesTaughtByUser
      * @param int $userid
      * @return array
      */
-    public static function get_enrolled_users($coursesTeachedByUser, $userid) : array {
+    public static function get_enrolled_users($coursesTaughtByUser, $userid) : array {
         $enrolledUsers = [];
         $enrolledUsersByCourses = [];
-        foreach($coursesTeachedByUser as $userCourse) {
+        foreach($coursesTaughtByUser as $userCourse) {
             $courseContext = \context_course::instance($userCourse->id);
 
-            if(groups_get_course_groupmode($userCourse) == "1" && !has_capability('moodle/site:accessallgroups', $courseContext, $userid)) {
+            if(groups_get_course_groupmode($userCourse) == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $courseContext, $userid)) {
                 $groupids = groups_get_user_groups($userCourse->id);
                 foreach($groupids as $groupid) {
-                    // $members = groups_get_members($groupid);
                     if(count($enrolledUsers) == 0) {
                         $enrolledUsers = groups_get_members($groupid[0]);
                     } else {
@@ -36,7 +35,7 @@ class users_helper
             } else {
                 $enrolledUsers = get_enrolled_users($courseContext,  '',  0,  'u.*',  '',  0,  0);
             }
-            $enrolledUsersByCourses[$userCourse->id] = \block_trackingdashboard\users_helper::filter_out_current_user_and_teachers($enrolledUsers, $userid, $courseContext);
+            $enrolledUsersByCourses[$userCourse->id] = users_helper::filter_out_current_user_and_teachers($enrolledUsers, $userid, $courseContext);
         }
         return $enrolledUsersByCourses;
     }
@@ -49,7 +48,7 @@ class users_helper
      * @param context $coursecontext
      * @return array
      */
-    function filter_out_current_user_and_teachers($userList, $currentUserid, $coursecontext) {
+    public static function filter_out_current_user_and_teachers($userList, $currentUserid, $coursecontext) {
         $filteredArray = [];
         foreach($userList as $user) {
             if($user->id != $currentUserid && !has_capability('block/trackingdashboard:listuser', $coursecontext, $user)) {
@@ -61,12 +60,12 @@ class users_helper
 
     /**
      * get user last access to course
-     *$course, $user
+     * *
      * @param course $course
      * @param user $user
      * @return boolean or date
      */
-    function get_last_access($course, $user) {
+    public static function get_last_access($course, $user) {
         global $DB;
         return $DB->get_field('user_lastaccess', 'timeaccess', array('courseid' => $course->id, 'userid' => $user->id));
     }

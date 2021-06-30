@@ -2,12 +2,14 @@
 
 namespace block_trackingdashboard;
 
+use core_completion\progress;
+
 defined('MOODLE_INTERNAL') || die();
 
 class courses_helper
 {
     /**
-     * Returns a list of courses teached by current user
+     * Returns a list of courses taught by current user
      *
      * @return array
      */
@@ -34,20 +36,15 @@ class courses_helper
      * @param user user
      * @return string
      */
-    public static function compute_course_completion($completionInfo, $user) : string {
-        $userModulesProgress = $completionInfo -> get_completions($user->id, null);
+    public static function compute_course_completion($course, $userId) : string {
 
-        $moduleCountToCompleteForCompletion = count($completionInfo->get_criteria());
-        $moduleCompleted = 0;
-        foreach($userModulesProgress as $userModuleProgress) {
-            foreach($completionInfo->get_criteria() as $criteria) {
-                if($userModuleProgress->get_criteria()->criteriatype == $criteria->criteriatype
-                    && $userModuleProgress->get_criteria()->moduleinstance == $criteria->moduleinstance
-                    && $userModuleProgress->timecompleted != null) {
-                    $moduleCompleted = $moduleCompleted + 1;
-                }
-            }
+        $progress = progress::get_course_progress_percentage($course, $userId);
+
+        if($progress == null) {
+            return get_string('noActivityToComplete', 'block_trackingdashboard');
         }
-        return number_format((float)($moduleCompleted / $moduleCountToCompleteForCompletion) * 100, 2, '.', '') . "%";
+
+        return number_format($progress, 2, '.', '') . '%';
+
     }
 }

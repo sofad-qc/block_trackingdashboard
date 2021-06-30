@@ -18,19 +18,12 @@
 /**
  * Settings for the HTML block
  *
- * @copyright 2012 Aaron Barnes
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @package   block_html
+ * @package   block_trackingdashboard
+ * @copyright 2021 SOFAD
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-/*if ($ADMIN->fulltree) {
-    $settings->add(new admin_setting_configcheckbox('block_trackingdashboard/showcourses',
-                                                    get_string('showcourses', 'block_trackingdashboard'),
-                                                    get_string('showcoursesdef', 'block_trackingdashboard'), 
-                                       0));
-}*/
 
 
 
