@@ -32,19 +32,28 @@ class courses_helper
     /**
      * Returns the course completion for a user
      *
-     * @param completionInfo completionInfo
+     * @param course course
      * @param user user
      * @return string
      */
     public static function compute_course_completion($course, $userId) : string {
 
-        $progress = progress::get_course_progress_percentage($course, $userId);
+        global $DB;
+        $courseInformation = $DB->get_record('course', array('id' => $course->id), "enablecompletion");
 
-        if($progress == null) {
+        if($courseInformation->enablecompletion == "1") {
+            $progress = progress::get_course_progress_percentage($course, $userId);
+
+            if($progress == null) {
+                $progress = 0;
+            }
+
+            return number_format($progress, 2, '.', '') . '%';
+        } else {
             return get_string('noActivityToComplete', 'block_trackingdashboard');
         }
 
-        return number_format($progress, 2, '.', '') . '%';
+
 
     }
 }
