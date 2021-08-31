@@ -15,28 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'block_html', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'block_trackingdashboard', language 'en'
  *
  * @package   block_trackingdashboard
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2021 SOFAD
  */
 
 
 $string['trackingdashboard:addinstance'] = 'Add a new tracking dashboard block';
+$string['trackingdashboard:myaddinstance'] = 'Add a new tracking dashboard block to Dashboard';
+$string['trackingdashboard:listuser'] = 'List enrolled user in dashboard';
 $string['trackingdashboard'] = 'tracking dashboard';
 $string['pluginname'] = 'Tracking Dashboard';
-$string['noCourse'] = 'There are no course teached by the current user';
+$string['noUser'] = 'There are no students enrolled in the courses taught by the current user';
 $string['userName'] = 'Name';
-$string['userId'] = 'user id';
 $string['courseName'] = 'Course';
 $string['courseCompletion'] = 'Progress';
 $string['courseLastAccess'] = 'Last activity';
 $string['learner'] = 'Learner';
-$string['filters'] = 'Filters';
-$string['headerTitle'] = 'Header title';
-$string['allUsers'] = 'All the users';
-$string['searchUsers'] = 'Search for users';
 $string['lastActivityDate'] = 'No activity since';
-$string['submitButton'] = 'Apply filters';
-$string['resetButton'] = 'Remove filters';
 $string['noActivityYet'] = 'No Activity Yet';
+$string['noActivityToComplete'] = 'No activity to complete';

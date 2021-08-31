@@ -1,5 +1,26 @@
-div.customFilter {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+div.trackingDashboardCustomFilter {
+    text-align: center;
+}
+
+.customFilterInput {
+    display: inline-block;
+}
+
+/* On screens that are 575px or less, align input fields */
+@media screen and (max-width: 575px) {
+    .customFilterInput {
+        display: inline-block;
+        width: auto;
+        margin-bottom: 0.5em;
+        margin-left: 0.5em;
+    }
+}
+
+
+.table td {
+    text-align: center;
+}
+
+.table th {
+    text-align: center;
 }

@@ -35,7 +35,6 @@ class messaging_helper
     public static function messageuser_requirejs($userId, $courseId)
     {
         global $PAGE;
-
-        $PAGE->requires->js_call_amd('block_trackingdashboard/message_user_button_custom', 'send', array('#message-user-' . $userId . '-course-'. $courseId .'-button'));
+        $PAGE->requires->js_call_amd('core_message/message_user_button', 'send', array('#message-user-' . $userId . '-course-'. $courseId .'-button'));
     }
 }

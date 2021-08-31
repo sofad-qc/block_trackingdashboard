@@ -18,7 +18,7 @@
  * Form for editing HTML block instances.
  *
  * @package   block_trackingdashboard
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2021 SOFAD
  */
 
 use block_trackingdashboard\courses_helper;
@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class block_trackingdashboard extends block_base {
 
-    public array $coursesTeachedByUser = [];
+    public array $coursesTaughtByUser = [];
 
     public array $enrolledUsersByCourse = [];
 
@@ -49,11 +49,9 @@ class block_trackingdashboard extends block_base {
         $userid = $USER->id;
 
         $this->page->requires->jquery();
-        $this->page->requires->css(new \moodle_url('https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/css/bootstrap.min.css'));
-        $this->page->requires->css(new \moodle_url('https://cdn.datatables.net/v/bs5/dt-1.10.25/datatables.min.css'));
-        $this->page->requires->js(new \moodle_url('https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/js/bootstrap.bundle.min.js'), true);
-        $this->page->requires->js(new \moodle_url('https://cdn.datatables.net/v/bs5/dt-1.10.25/datatables.min.js'), true);
+        $this->page->requires->css(new \moodle_url('https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.css'));
         $this->page->requires->css(new \moodle_url(new \moodle_url($CFG->wwwroot . '/blocks/trackingdashboard/styles.css')));
+        $this->page->requires->js(new \moodle_url('https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js'), true);
         $this->page->requires->js(new \moodle_url($CFG->wwwroot . '/blocks/trackingdashboard/js/my_datatables.js'));
 
         // Check if null
@@ -61,24 +59,43 @@ class block_trackingdashboard extends block_base {
             return $this->content;
         }
 
-        $this->coursesTeachedByUser = courses_helper::get_user_courses();
+        $this->coursesTaughtByUser = courses_helper::get_user_courses();
 
-        // No courses are teached, return
-        if(count($this->coursesTeachedByUser) == 0) {
-            $this->content->text = get_string('noCourse', 'block_trackingdashboard');
-            return $this->content;
+        // No courses are taught, return empty
+        if(count($this->coursesTaughtByUser) == 0) {
+            return '';
         }
 
-        $this->enrolledUsersByCourse = users_helper::get_enrolled_users($this->coursesTeachedByUser, $userid);
+        $this->enrolledUsersByCourse = users_helper::get_enrolled_users($this->coursesTaughtByUser, $userid);
 
         $this->content = new stdClass();
-        $this->tableData = display_helper::build_table_data($this->enrolledUsersByCourse, $this->coursesTeachedByUser, $CFG, $this->page);
-        $htmlTable = display_helper::build_table($this->tableData);
-        $this->content->text = $htmlTable;
+
+        $lang = display_helper::getLanguage();
+        $this->content->text = '<p id="data-lang" style="display: none;">' . $lang . '</p>';
+
+        $hasUsers = false;
+        foreach($this->enrolledUsersByCourse as $enrolledUsersPerCourse) {
+            if(count($enrolledUsersPerCourse) > 0) {
+                $hasUsers = true;
+            }
+        }
+
+        if($hasUsers) {
+            $this->tableData = display_helper::build_table_data($this->enrolledUsersByCourse, $this->coursesTaughtByUser, $CFG, $this->page);
+            $htmlTable = display_helper::build_table($this->tableData);
+            $this->content->text .= $htmlTable;
+        } else {
+            // return specific string when no students are enrolled
+            $this->content->text .= get_string('noUser', 'block_trackingdashboard');
+        }
 
 
         return $this->content;
     }
+
 }
+
+
+
 
 
