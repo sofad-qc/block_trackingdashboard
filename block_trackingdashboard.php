@@ -29,11 +29,11 @@ defined('MOODLE_INTERNAL') || die();
 
 class block_trackingdashboard extends block_base {
 
-    public array $coursesTaughtByUser = [];
+    public $coursesTaughtByUser = [];
 
-    public array $enrolledUsersByCourse = [];
+    public $enrolledUsersByCourse = [];
 
-    public array $tableData = [];
+    public $tableData = [];
 
     function init() {
         $this->title = get_string('pluginname', 'block_trackingdashboard');
@@ -50,9 +50,12 @@ class block_trackingdashboard extends block_base {
 
         $this->page->requires->jquery();
         $this->page->requires->css(new \moodle_url('https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.css'));
-        $this->page->requires->css(new \moodle_url(new \moodle_url($CFG->wwwroot . '/blocks/trackingdashboard/styles.css')));
+        $this->page->requires->css(new \moodle_url('https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css'));
+        $this->page->requires->css(new \moodle_url($CFG->wwwroot . '/blocks/trackingdashboard/styles.css'));
+        $this->page->requires->js(new \moodle_url('https://cdn.jsdelivr.net/momentjs/latest/moment.min.js'), true);
+        $this->page->requires->js(new \moodle_url('https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js'), true);
         $this->page->requires->js(new \moodle_url('https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js'), true);
-        $this->page->requires->js(new \moodle_url($CFG->wwwroot . '/blocks/trackingdashboard/js/my_datatables.js'));
+        $this->page->requires->js(new \moodle_url($CFG->wwwroot . '/blocks/trackingdashboard/js/script.js'));
 
         // Check if null
         if ($this->content !== NULL) {
