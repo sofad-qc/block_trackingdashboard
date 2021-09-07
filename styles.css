@@ -6,21 +6,41 @@ div.trackingDashboardCustomFilter {
     display: inline-block;
 }
 
-/* On screens that are 575px or less, align input fields */
 @media screen and (max-width: 575px) {
+    .dataTables_wrapper {
+        margin-bottom: 8rem;
+    }
+    .filters {
+        position: absolute;
+    }
+    .filter {
+        padding-right: 0;
+        margin-left: -1rem;
+        text-align: center;
+    }
     .customFilterInput {
         display: inline-block;
-        width: auto;
-        margin-bottom: 0.5em;
-        margin-left: 0.5em;
+        width: 15rem !important;
+    }
+    .dataTables_filter input {
+        width: 15rem !important;
+    }
+    .dataTables_length {
+        margin-left: 1.5rem;
     }
 }
 
-
 .table td {
     text-align: center;
+    vertical-align: middle;
 }
 
 .table th {
     text-align: center;
+}
+
+.activity_list {
+    padding: 0;
+    list-style-type: none;
+    margin-bottom: 0;
 }

@@ -4,6 +4,7 @@ namespace block_trackingdashboard;
 
 use html_writer;
 use moodle_url;
+global $CFG;
 require_once($CFG->dirroot."/user/lib.php");
 require_once($CFG->dirroot."/lib/completionlib.php");
 
@@ -24,13 +25,15 @@ class display_helper
         $boardArray = [];
         foreach($courseList as $currentCourse) {
             foreach($userList[$currentCourse->id] as $user) {
-                $userLastAccess = users_helper::get_last_access($currentCourse, $user);
                 $boardArray[] = array(
                     '' => display_helper::user_message($user, $currentCourse, $CFG, $page),
                     'userName' => display_helper::userProfile($user, $currentCourse),
                     'courseName' => display_helper::coursePage($currentCourse),
-                    'courseLastAccess' => $userLastAccess == false ? get_string('noActivityYet', 'block_trackingdashboard') : date('F jS, Y', $userLastAccess),
-                    'courseCompletion' => courses_helper::compute_course_completion($currentCourse, $user->id)
+                    'courseLastActivity' => courses_helper::get_most_recent_activity_accessed($currentCourse->id, $user->id),
+                    'courseCompletion' => courses_helper::compute_course_completion($currentCourse, $user->id),
+                    'waitingGradedWork' => display_helper::buildNonGradedWorkList($currentCourse->id, $user->id),
+                    'courseEndDate' => !$currentCourse->enddate ? get_string('noEndDate',
+                        'block_trackingdashboard') : date('F jS, Y', $currentCourse->enddate),
                 );
             }
         }
@@ -45,18 +48,13 @@ class display_helper
      * @return array
      */
     public static function user_message($user, $currentCourse, $CFG, $page) {
-        global $DB;
         $context = $page->context;
         $course = ($page->context->contextlevel == CONTEXT_COURSE) ? $page->course : null;
         $userbutton = null;
         if (user_can_view_profile($user, $course)) {
-            // Use the user's full name if the heading isn't set.
-            if (empty($heading)) {
-                $heading = fullname($user);
-            }
 
             // Check to see if we should be displaying a message button.
-            if (!empty($CFG->messaging) && has_capability('moodle/site:sendmessage', $context)) {
+            if(!empty($CFG->messaging) && has_capability('moodle/site:sendmessage', $context)) {
                 $userbutton = array(
                     'buttontype' => 'message',
                     'title' => get_string('message', 'message'),
@@ -95,16 +93,16 @@ class display_helper
      */
     public static function build_table($tableData){
         // start table
-        $html = '<table class="table table-bordered" id="dashboard">';
+        $html = '<div class="table-responsive"><table class="table table-bordered" id="dashboard">';
 
         // header row
         $html .= '<thead class="thead-light"><tr>';
         foreach($tableData[0] as $key=>$value){
             if($key == '') {
-                $html .= '<th>' . '' . '</th>';
+                $html .= '<th scope="col">' . '' . '</th>';
             }
             else {
-                $html .= '<th>' . htmlspecialchars(get_string($key, 'block_trackingdashboard')) . '</th>';
+                $html .= '<th scope="col">' . htmlspecialchars(get_string($key, 'block_trackingdashboard')) . '</th>';
             }
 
         }
@@ -114,7 +112,7 @@ class display_helper
         foreach($tableData as $key=>$value){
             $html .= '<tr>';
             foreach($value as $key2=>$value2) {
-                if($key2 == '' || $key2 == 'userName' || $key2 == 'courseName') {
+                if($key2 == '' || $key2 == 'userName' || $key2 == 'courseName' || $key2 == 'waitingGradedWork') {
                     $html .= '<td>' . $value2 . '</td>';
                 } else {
                     $html .= '<td>' . htmlspecialchars($value2) . '</td>';
@@ -125,8 +123,30 @@ class display_helper
 
         // finish table and return it
 
-        $html .= '</tbody></table>';
+        $html .= '</tbody></table></div>';
         return $html;
+    }
+
+    /**
+     * Returns a HTML string corresponding to the course link and information
+     *
+     * @param course course
+     * @return string
+     */
+    public static function buildNonGradedWorkList($courseId, $userId) {
+        $toReturn = '<ul class="activity_list">';
+        $workArray = courses_helper::get_non_graded_work($courseId, $userId);
+        if(gettype($workArray) == 'string') {
+            return $workArray;
+        }
+        if(count($workArray) == 1) {
+            return $workArray[0];
+        }
+        foreach ($workArray as $work) {
+            $toReturn .= '<li>' . $work . '</li>';
+        }
+        $toReturn .= '</ul>';
+        return $toReturn;
     }
 
     /**
@@ -159,7 +179,5 @@ class display_helper
      */
     public static function getLanguage() {
         return current_language();
-
     }
-
 }

@@ -21,12 +21,12 @@ class users_helper
             $courseContext = \context_course::instance($userCourse->id);
 
             if(groups_get_course_groupmode($userCourse) == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $courseContext, $userid)) {
-                $groupids = groups_get_user_groups($userCourse->id);
-                foreach($groupids as $groupid) {
-                    if(count($enrolledUsers) == 0) {
-                        $enrolledUsers = groups_get_members($groupid[0]);
+                $groupIds = groups_get_user_groups($userCourse->id);
+                foreach($groupIds[0] as $groupId) {
+                    if(empty($enrolledUsers)) {
+                        $enrolledUsers = groups_get_members($groupId);
                     } else {
-                        foreach(groups_get_members($groupid) as $groupMember) {
+                        foreach(groups_get_members($groupId) as $groupMember) {
                             $enrolledUsers[] = $groupMember;
                         }
                     }
@@ -36,6 +36,7 @@ class users_helper
                 $enrolledUsers = get_enrolled_users($courseContext,  '',  0,  'u.*',  '',  0,  0);
             }
             $enrolledUsersByCourses[$userCourse->id] = users_helper::filter_out_current_user_and_teachers($enrolledUsers, $userid, $courseContext);
+            $enrolledUsers = [];
         }
         return $enrolledUsersByCourses;
     }
@@ -45,7 +46,7 @@ class users_helper
      *
      * @param array $userList
      * @param int $currentUserid
-     * @param context $coursecontext
+     * @param object $coursecontext
      * @return array
      */
     public static function filter_out_current_user_and_teachers($userList, $currentUserid, $coursecontext) {
@@ -57,17 +58,4 @@ class users_helper
         }
         return $filteredArray;
     }
-
-    /**
-     * get user last access to course
-     * *
-     * @param course $course
-     * @param user $user
-     * @return boolean or date
-     */
-    public static function get_last_access($course, $user) {
-        global $DB;
-        return $DB->get_field('user_lastaccess', 'timeaccess', array('courseid' => $course->id, 'userid' => $user->id));
-    }
-
 }
