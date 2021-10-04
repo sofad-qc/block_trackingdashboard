@@ -1,30 +1,33 @@
 /* eslint-env es6 */
 
-window.$(document).ready(function() {
-    window.$.fn.dataTable.ext.search.push(
-        function(settings, data) {
-            const lastActivityRangePicker = window.$('#lastActivityRange');
-            if(lastActivityRangePicker !== null) {
-                const dateRangePickerValues = lastActivityRangePicker.val();
-                if(dateRangePickerValues !== undefined && dateRangePickerValues !== getTranslatedPlaceHolder()) {
-                    let minDate = Date.parse(dateRangePickerValues.substring(0, dateRangePickerValues.indexOf('-') - 1));
-                    let maxDate = Date.parse(dateRangePickerValues.substring(
-                        dateRangePickerValues.indexOf('-') + 2,
-                        dateRangePickerValues.length));
-                    // eslint-disable-next-line no-undef
-                    let strippedDate = Date.parse(data[3]
-                        .replace('th', '').replace('nd', '').replace('st', '').replace('rd', ''))
-                        || 0;
-                    if(strippedDate >= minDate && strippedDate <= maxDate) {
-                        return true;
-                    }
-                    return false;
+var $ = jQuery.noConflict();
+
+$.fn.dataTable.ext.search.push(
+    function(settings, data) {
+        const lastActivityRangePicker = $('#lastActivityRange');
+        if(lastActivityRangePicker !== null) {
+            const dateRangePickerValues = lastActivityRangePicker.val();
+            if(dateRangePickerValues !== undefined && dateRangePickerValues !== getTranslatedPlaceHolder()) {
+                let minDate = Date.parse(dateRangePickerValues.substring(0, dateRangePickerValues.indexOf('-') - 1));
+                let maxDate = Date.parse(dateRangePickerValues.substring(
+                    dateRangePickerValues.indexOf('-') + 2,
+                    dateRangePickerValues.length));
+                // eslint-disable-next-line no-undef
+                let strippedDate = Date.parse(data[3]
+                    .replace('th', '').replace('nd', '').replace('st', '').replace('rd', ''))
+                    || 0;
+                if(strippedDate >= minDate && strippedDate <= maxDate) {
+                    return true;
                 }
+                return false;
             }
-            return true;
         }
-    );
-    let table = window.$('#dashboard').DataTable({
+        return true;
+    }
+);
+
+$(document).ready(function() {
+    let table = $('#dashboard').DataTable({
         columnDefs: [
             {
                 orderable: false, targets: 0
@@ -35,8 +38,8 @@ window.$(document).ready(function() {
         language: {
             url: getLanguageFileUrl(),
         },
-        initComplete: function() {
-            window.$("div.trackingDashboardCustomFilter")
+        "initComplete": function() {
+            $("div.trackingDashboardCustomFilter")
                 .html(
                      '<input ' +
                     'type="text" ' +
@@ -44,26 +47,28 @@ window.$(document).ready(function() {
                     'class="customFilterInput form-control form-control-sm" ' +
                     'id="lastActivityRange" ' +
                     'value="' + getTranslatedPlaceHolder() + '" />');
-            window.$(function() {
-                window.$('input[name="datefilter"]').daterangepicker({
+            $(function() {
+                $('input[name="datefilter"]').daterangepicker({
                     autoUpdateInput: false,
                     opens: 'center',
                     showDropdowns: true,
                     locale: {
-                        cancelLabel: 'Clear'
+                        applyLabel: getTranslatedConfirmButton(),
+                        cancelLabel: getTranslatedClearButton()
                     }
                 });
-                window.$('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
-                    window.$(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+                $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
+                    $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
                     table.draw();
                 });
 
-                window.$('input[name="datefilter"]').on('cancel.daterangepicker', function() {
-                    window.$(this).val(getTranslatedPlaceHolder());
+                $('input[name="datefilter"]').on('cancel.daterangepicker', function() {
+                    $(this).val(getTranslatedPlaceHolder());
                     table.draw();
                 });
             });
         }
+    });
 });
 
 /**
@@ -90,5 +95,28 @@ function getTranslatedPlaceHolder() {
     return 'Date range for last activity';
 }
 
+/**
+ * Return translated placeholder for datepicker.
+ * @returns {string} The translated placeholder.
+ */
+function getTranslatedConfirmButton() {
+    const lang = document.getElementById("data-lang").textContent;
+    if(lang.includes("fr")) {
+        return 'Appliquer';
+    }
+    return 'Apply';
+}
 
-});
+/**
+ * Return translated placeholder for datepicker.
+ * @returns {string} The translated placeholder.
+ */
+function getTranslatedClearButton() {
+    const lang = document.getElementById("data-lang").textContent;
+    if(lang.includes("fr")) {
+        return 'Effacer';
+    }
+    return 'Clear';
+}
+
+
